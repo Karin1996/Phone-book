@@ -1,26 +1,52 @@
 using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.Devices;
 using System;
 using System.Data;
+using System.Data.SQLite;
 using System.Diagnostics;
+using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Phone_book
 {
     public partial class Home : Form
     {
+        SQLiteConnection conn = new SQLiteConnection("Data Source=peopleDB.db");
         List<Person> people = new List<Person>();
         int personId;
         string defaultTabText = "Add new contact";
-  
+
+
         public Home()
         {
             InitializeComponent();
 
-            // Initialize
-            people.Add(new Person(0, "kerin", "kreeft", "0615508853", "bluescript", "7902JH", "korte kavel", "24", "emmen"));
-            people.Add(new Person(1, "karin", "kreeft", "0615508853", "bluescript", "7902JH", "korte kavel", "24", "emmen"));
-            people.Add(new Person(2, "gerrit", "kreeft", "0615508853", "bluescript", "7902JH", "korte kavel", "24", "emmen"));
-            people.Add(new Person(3, "patrick", "kreeft", "0615508853", "bluescript", "7902JH", "korte kavel", "24", "emmen"));
+            // Set up DB connection
+            conn.Open();
+
+            // Query
+            string query = "SELECT * from Person";
+            
+            // Statement
+            SQLiteCommand command = new SQLiteCommand(query, conn);
+            SQLiteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                people.Add(
+                    new Person(
+                        Convert.ToInt32(reader["id"]), 
+                        Convert.ToString(reader["firstname"]), 
+                        Convert.ToString(reader["lastname"]), 
+                        Convert.ToString(reader["number"]), 
+                        Convert.ToString(reader["company"]), 
+                        Convert.ToString(reader["zipcode"]), 
+                        Convert.ToString(reader["street"]), 
+                        Convert.ToString(reader["house"]), 
+                        Convert.ToString(reader["city"])
+                        )
+                    );
+            } 
 
             PopulateTable();
         }
@@ -28,6 +54,11 @@ namespace Phone_book
         private void Home_Load(object sender, EventArgs e)
         {
             SaveDeleteButtonsVisible(false);
+        }
+        private void Home_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Close DB connection
+            conn.Close();
         }
 
         private void SearchInput_TextChanged(object sender, EventArgs e)
@@ -49,7 +80,7 @@ namespace Phone_book
             int id = Int32.Parse(thisBtn.Name);
             personId = id;
 
-            //Get correct Person information
+            // Get correct Person information
             Person correctPerson = people.Find(person => id == person.id);
    
             if(correctPerson != null) MutateContactInfo("edit", correctPerson);
@@ -116,6 +147,7 @@ namespace Phone_book
                 ContactInfo.Controls.Add(new Label() { Text = person.number }, 1, index);
                 // Add button to every element
                 ContactInfo.Controls.Add(EditBtn, 2, index);
+                ContactInfo.RowCount += 1;
                 index++;
             }
         }
@@ -150,9 +182,6 @@ namespace Phone_book
                 // If ValidateForm is true, there are no type errors, continue process
                 if (ValidateForm())
                 {
-                    Debug.Write("Validate form" + ValidateForm());
-                    Debug.Write("save contact info");
-
                     // Edit correct Person information
                     correctPerson.firstname = firstnameInput.Text;
                     correctPerson.lastname = lastnameInput.Text;
@@ -162,6 +191,13 @@ namespace Phone_book
                     correctPerson.street = streetInput.Text;
                     correctPerson.house = houseInput.Text;
                     correctPerson.city = cityInput.Text;
+
+                    string query = "UPDATE Person SET firstname = '{0}', lastname = '{1}', number = '{2}', company = '{3}', zipcode = '{4}', street = '{5}', house = '{6}', city = '{7}' WHERE ID=" + Convert.ToString(correctPerson.id);
+                    query = String.Format(query, firstnameInput.Text, lastnameInput.Text, numberInput.Text, companyInput.Text, zipcodeInput.Text, streetInput.Text, houseInput.Text, cityInput.Text);
+
+                    // Statement
+                    SQLiteCommand command = new SQLiteCommand(query, conn);
+                    Debug.Write(command.ExecuteNonQuery());
 
                     // Reload table with added person
                     PopulateTable();
@@ -181,6 +217,11 @@ namespace Phone_book
                 Person correctPerson = people.Find(person => personId == person.id);
                 // Remove correct Person
                 people.Remove(correctPerson);
+
+                string query = "DELETE from Person WHERE ID=" + Convert.ToString(correctPerson.id);
+                // Statement
+                SQLiteCommand command = new SQLiteCommand(query, conn);
+                command.ExecuteNonQuery();
 
                 // Reload table
                 PopulateTable();
@@ -204,8 +245,13 @@ namespace Phone_book
                 // If ValidateForm is true, there are no type errors, continue process
                 if (ValidateForm())
                 {
+                    string query = "INSERT INTO Person VALUES (NULL, '{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}'); SELECT last_insert_rowid() FROM Person;";
+                    query = String.Format(query, firstnameInput.Text, lastnameInput.Text, numberInput.Text, companyInput.Text, zipcodeInput.Text, streetInput.Text, houseInput.Text, cityInput.Text); 
+                    // Statement
+                    SQLiteCommand command = new SQLiteCommand(query, conn);
+
                     people.Insert(0, new Person(
-                       people.Count,
+                       Convert.ToInt32(command.ExecuteScalar()), 
                        firstnameInput.Text,
                        lastnameInput.Text,
                        numberInput.Text,
