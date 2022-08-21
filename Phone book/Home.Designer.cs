@@ -33,10 +33,10 @@
             this.SearchInput = new System.Windows.Forms.TextBox();
             this.SearchHr = new System.Windows.Forms.Label();
             this.MutateContactPage = new System.Windows.Forms.TabPage();
-            this.label10 = new System.Windows.Forms.Label();
-            this.deleteContactBtn = new System.Windows.Forms.Button();
             this.addContactBtn = new System.Windows.Forms.Button();
-            this.editContactBtn = new System.Windows.Forms.Button();
+            this.messageField = new System.Windows.Forms.Label();
+            this.deleteContactBtn = new System.Windows.Forms.Button();
+            this.saveEditContactBtn = new System.Windows.Forms.Button();
             this.cityInput = new System.Windows.Forms.TextBox();
             this.houseInput = new System.Windows.Forms.TextBox();
             this.streetInput = new System.Windows.Forms.TextBox();
@@ -57,7 +57,6 @@
             this.SortCheckbox = new System.Windows.Forms.CheckBox();
             this.ContactInfo = new System.Windows.Forms.TableLayoutPanel();
             this.Tabs = new System.Windows.Forms.TabControl();
-            this.ErrorMsg = new System.Windows.Forms.Label();
             this.MutateContactPage.SuspendLayout();
             this.ContactInfoPage.SuspendLayout();
             this.Tabs.SuspendLayout();
@@ -105,11 +104,10 @@
             // 
             // MutateContactPage
             // 
-            this.MutateContactPage.Controls.Add(this.ErrorMsg);
-            this.MutateContactPage.Controls.Add(this.label10);
-            this.MutateContactPage.Controls.Add(this.deleteContactBtn);
             this.MutateContactPage.Controls.Add(this.addContactBtn);
-            this.MutateContactPage.Controls.Add(this.editContactBtn);
+            this.MutateContactPage.Controls.Add(this.messageField);
+            this.MutateContactPage.Controls.Add(this.deleteContactBtn);
+            this.MutateContactPage.Controls.Add(this.saveEditContactBtn);
             this.MutateContactPage.Controls.Add(this.cityInput);
             this.MutateContactPage.Controls.Add(this.houseInput);
             this.MutateContactPage.Controls.Add(this.streetInput);
@@ -131,30 +129,12 @@
             this.MutateContactPage.Padding = new System.Windows.Forms.Padding(3);
             this.MutateContactPage.Size = new System.Drawing.Size(432, 762);
             this.MutateContactPage.TabIndex = 1;
-            this.MutateContactPage.Text = "add new contact";
+            this.MutateContactPage.Text = "Add new contact";
             this.MutateContactPage.UseVisualStyleBackColor = true;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(124, 386);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(211, 15);
-            this.label10.TabIndex = 19;
-            this.label10.Text = "Moeten er zijn als je persoon wil editen";
-            // 
-            // deleteContactBtn
-            // 
-            this.deleteContactBtn.Location = new System.Drawing.Point(341, 407);
-            this.deleteContactBtn.Name = "deleteContactBtn";
-            this.deleteContactBtn.Size = new System.Drawing.Size(75, 23);
-            this.deleteContactBtn.TabIndex = 18;
-            this.deleteContactBtn.Text = "Delete";
-            this.deleteContactBtn.UseVisualStyleBackColor = true;
             // 
             // addContactBtn
             // 
-            this.addContactBtn.Location = new System.Drawing.Point(331, 289);
+            this.addContactBtn.Location = new System.Drawing.Point(341, 287);
             this.addContactBtn.Name = "addContactBtn";
             this.addContactBtn.Size = new System.Drawing.Size(75, 23);
             this.addContactBtn.TabIndex = 17;
@@ -162,14 +142,34 @@
             this.addContactBtn.UseVisualStyleBackColor = true;
             this.addContactBtn.Click += new System.EventHandler(this.AddContactBtn_Click);
             // 
-            // editContactBtn
+            // messageField
             // 
-            this.editContactBtn.Location = new System.Drawing.Point(341, 378);
-            this.editContactBtn.Name = "editContactBtn";
-            this.editContactBtn.Size = new System.Drawing.Size(75, 23);
-            this.editContactBtn.TabIndex = 16;
-            this.editContactBtn.Text = "Edit";
-            this.editContactBtn.UseVisualStyleBackColor = true;
+            this.messageField.AutoSize = true;
+            this.messageField.Location = new System.Drawing.Point(14, 291);
+            this.messageField.Name = "messageField";
+            this.messageField.Size = new System.Drawing.Size(79, 15);
+            this.messageField.TabIndex = 20;
+            this.messageField.Text = "message here";
+            // 
+            // deleteContactBtn
+            // 
+            this.deleteContactBtn.Location = new System.Drawing.Point(341, 315);
+            this.deleteContactBtn.Name = "deleteContactBtn";
+            this.deleteContactBtn.Size = new System.Drawing.Size(75, 23);
+            this.deleteContactBtn.TabIndex = 18;
+            this.deleteContactBtn.Text = "Delete";
+            this.deleteContactBtn.UseVisualStyleBackColor = true;
+            this.deleteContactBtn.Click += new System.EventHandler(this.deleteContactBtn_Click);
+            // 
+            // saveEditContactBtn
+            // 
+            this.saveEditContactBtn.Location = new System.Drawing.Point(259, 315);
+            this.saveEditContactBtn.Name = "saveEditContactBtn";
+            this.saveEditContactBtn.Size = new System.Drawing.Size(75, 23);
+            this.saveEditContactBtn.TabIndex = 16;
+            this.saveEditContactBtn.Text = "Save";
+            this.saveEditContactBtn.UseVisualStyleBackColor = true;
+            this.saveEditContactBtn.Click += new System.EventHandler(this.saveEditContactBtn_Click);
             // 
             // cityInput
             // 
@@ -311,7 +311,7 @@
             this.ContactInfoPage.Padding = new System.Windows.Forms.Padding(3);
             this.ContactInfoPage.Size = new System.Drawing.Size(432, 762);
             this.ContactInfoPage.TabIndex = 0;
-            this.ContactInfoPage.Text = "all contacts";
+            this.ContactInfoPage.Text = "All contacts";
             this.ContactInfoPage.UseVisualStyleBackColor = true;
             // 
             // SortCheckbox
@@ -327,9 +327,10 @@
             // 
             // ContactInfo
             // 
-            this.ContactInfo.ColumnCount = 2;
+            this.ContactInfo.ColumnCount = 3;
             this.ContactInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.ContactInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.ContactInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            this.ContactInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.ContactInfo.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.AddColumns;
             this.ContactInfo.Location = new System.Drawing.Point(0, 62);
             this.ContactInfo.Name = "ContactInfo";
@@ -340,9 +341,8 @@
             this.ContactInfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.ContactInfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.ContactInfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.ContactInfo.Size = new System.Drawing.Size(432, 614);
+            this.ContactInfo.Size = new System.Drawing.Size(432, 700);
             this.ContactInfo.TabIndex = 1;
-            this.ContactInfo.Paint += new System.Windows.Forms.PaintEventHandler(this.ContactInfo_Paint);
             // 
             // Tabs
             // 
@@ -354,15 +354,7 @@
             this.Tabs.SelectedIndex = 0;
             this.Tabs.Size = new System.Drawing.Size(440, 790);
             this.Tabs.TabIndex = 4;
-            // 
-            // ErrorMsg
-            // 
-            this.ErrorMsg.AutoSize = true;
-            this.ErrorMsg.Location = new System.Drawing.Point(49, 286);
-            this.ErrorMsg.Name = "ErrorMsg";
-            this.ErrorMsg.Size = new System.Drawing.Size(107, 15);
-            this.ErrorMsg.TabIndex = 20;
-            this.ErrorMsg.Text = "Error message here";
+            this.Tabs.Click += new System.EventHandler(this.TabControl_Click);
             // 
             // Home
             // 
@@ -394,10 +386,9 @@
         private TextBox SearchInput;
         private Label SearchHr;
         private TabPage MutateContactPage;
-        private Label label10;
         private Button deleteContactBtn;
         private Button addContactBtn;
-        private Button editContactBtn;
+        private Button saveEditContactBtn;
         private TextBox cityInput;
         private TextBox houseInput;
         private TextBox streetInput;
@@ -418,6 +409,6 @@
         private CheckBox SortCheckbox;
         private TableLayoutPanel ContactInfo;
         private TabControl Tabs;
-        private Label ErrorMsg;
+        private Label messageField;
     }
 }

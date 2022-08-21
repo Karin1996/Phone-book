@@ -10,6 +10,7 @@ namespace Phone_book
 {
     internal class Person
     {
+        public int id;
         public string firstname;
         public string lastname;
         public string number;
@@ -20,8 +21,9 @@ namespace Phone_book
         public string city;
 
         // constructor
-        public Person(string firstname, string lastname, string number, string company, string zipcode, string street, string house, string city)
+        public Person(int id, string firstname, string lastname, string number, string company, string zipcode, string street, string house, string city)
         {
+            this.id = id;
             this.firstname = firstname;
             this.lastname = lastname;
             this.number = number;
